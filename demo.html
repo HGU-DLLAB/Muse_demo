@@ -30,8 +30,8 @@ table {color: black; font-size: 15px}
     <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
     <a href="#" class="w3-bar-item w3-button w3-padding-large">HOME</a>
     <a href="#band" class="w3-bar-item w3-button w3-padding-large w3-hide-small">INTRODUCTION</a>
-    <a href="#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">AUDIO_DEMO</a>
-    <a href="#contact" class="w3-bar-item w3-button w3-padding-large w3-hide-small">VISUALIZATION</a>
+    <a href="#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">AUDIO DEMO</a>
+    <a href="#contact" class="w3-bar-item w3-button w3-padding-large w3-hide-small">MORE DETAIL</a>
     <div class="w3-dropdown-hover w3-hide-small">
       <button class="w3-padding-large w3-button" title="More">Developers <i class="fa fa-caret-down"></i></button>     
       <div class="w3-dropdown-content w3-bar-block w3-card-4">
@@ -70,20 +70,27 @@ table {color: black; font-size: 15px}
   <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
     <h2 class="w3-wide"><b>MuSE-SVS</b></h2>
     <p class="w3-opacity"><i>Multi Singer Emotional Singing Voice Synthesizer that Controls Emotional Intensity</i></p>
-    <p class="w3-justify"><b>MuSE-SVS</b> is the first multi-singer emotional singing voice synthesizer
-      that expresses various levels of emotional intensity. During synthesizing singing voices
-      according to the lyrics, pitch, and duration of the music score, Muse-SVS reflects singer
-      characteristics and emotional intensity by adding variances in pitch, energy, and phoneme
-      duration according to singer ID and emotional intensity. Representing all attributes by
-      conditional residual embeddings in a single unified embedding space, Muse-SVS controls
-      mutually correlated style attributes, minimizing interference. Additionally, we apply
-      emotion embedding interpolation and extrapolation techniques that lead the model to
-      learn a linear embedding space and allow the model to express emotional intensity
-      levels not included in the training data. In experiments, Muse-SVS synthesized high fidelity singing voices reflecting the singer ID and emotional intensity. Muse-SVS exhibits
-      significantly better results than other comparative models in several quantitative evaluation.
-      Furthermore, the visualization of the unified embedding space exhibits that Muse-SVS
-      estimates the correct variations in pitch and energy highly correlated with the singer ID
-      and emotional intensity level.      
+    <p class="w3-justify">We propose a multi-singer emotional singing voice
+      synthesizer, <b>Muse-SVS</b>, that expresses emotion at various intensity levels by controlling subtle changes in pitch and phoneme
+      length while accurately following the lyrics, pitch, and phoneme
+      length of the score. To control multiple style attributes avoiding
+      loss of fidelity and expressiveness due to interference between
+      attributes, Muse-SVS represents all attributes and their relations
+      together by a joint embedding in a unified embedding space.
+      Muse-SVS can express emotional intensity not in the training
+      data, including even stronger emotions than those in the training
+      data, through emotion embedding interpolation and extrapolation. We also propose a statistical pitch predictor to express pitch
+      variance according to emotional intensity and a context-aware
+      residual duration predictor to prevent the accumulation of variances in phoneme duration, which is crucial for synchronization
+      when synthesizing long singing voices. In addition, we propose
+      a novel ASPP-Transformer to improve fidelity and expressiveness by referring to broad contexts. In experiments, Muse-SVS
+      exhibited improved fidelity, expressiveness, and synchronization
+      performance compared with the baseline models. The results of
+      quantitative evaluation and visualization analysis show that the
+      proposed methods effectively express the variance in pitch and
+      phoneme duration according to emotional intensity. To the best
+      of our knowledge, Muse-SVS is the first singing voice synthesizer
+      capable of controlling emotional intensity.
       <!-- <a style='text-align: center; font-size: 15px; color: #9F8772;' href="https://arxiv.org/pdf/2203.00931.pdf" > U-Singer Paper link</a> -->
       </p>
   </div>
@@ -174,8 +181,11 @@ table {color: black; font-size: 15px}
          
         </li>
         <li class="w3-padding" style="font-size: 20px;  text-align:center; color:black;">Interpolation and Extrapolation<br>
-          <p style="font-size: 18px; color:black; text-align:left;">We only trained 4 stages of intensity, which is 0.0, 0.3, 0.7, and 1.0. Because MuSE-Singer learns a unified embedding space, it is possible to extract any scale of intensity even though it is not included in training dataset.</p>
-          
+          <p style="font-size: 18px; color:black; text-align:left;">Muse-SVS applies emotion embedding interpolation. It learns only three embeddings, each of which is for <var>happy<sub>0.1</sub></var>, <var>neutral</var>, and <var>sad<sub>0.1</sub></var>, and computes the embeddings of intermediate intensity levels by interpolation as <var>r<sub>happy<sub>t</sub></sub> = t*r<sub>happy<sub>1.0</sub></sub> + (1-t)*r<sub>neutral</sub></var>&nbsp;&nbsp;&nbsp;and&nbsp;&nbsp;&nbsp;<var>r<sub>sad<sub>t</sub></sub> = t*r<sub>sad<sub>1.0</sub></sub> + (1-t)*r<sub>neutral</sub></var> . 
+            <br>It has multiple advantages: first, it is possilbe to express intermediate intensity levels, such as <var>happy<sub>0.5</sub></var> and <var>sad<sub>0.8</sub></var>, that are not in the training data. 
+            Furthermore, it enalbes the synthesis of singing voices with emotional intensities beyond those in the training data by emotion embedding extrapolation with <var>t > 1</var>.
+            Third, applying emotion embedding interpolation during training leads the model to reflect the neighborhood relation between emotional intensity levels and thereby to learn a linear embedding space, as shown in a figure.
+          </p>
           <img src="image_audio/embedding_space.png" style="width:300px;"/>
           <p style="font-size: 15px; color:black;">Embedding Space</p>
           <table align="center">
@@ -195,27 +205,6 @@ table {color: black; font-size: 15px}
               <td><audio controls src="image_audio/Muse_SVS/M2_joy010_29_10.wav">해당 브라우저는 audio를 지원하지 않습니다.</audio></td>
             </tr>
           </table>
-        </li>      
-        <li class="w3-padding" style="font-size: 20px;  text-align:center; color:black;">Comparison of pitch<br>
-          <p style="font-size: 18px; color:black; text-align:left;">Comparison of F0 contour</p>
-
-          <table align="center">
-            <colgroup span="5" class="columns"></colgroup>
-            <tr align="center">
-              <th></th>
-              <th>Neutral</th>
-              <th>Sad 0.3</th>
-              <th>Sad 0.7</th>
-              <th>Sad 1.0</th>
-            </tr>
-            <tr>
-              <td><b>MuSE-SVS</b></td>
-              <td><img src="image_audio/neutral.png" style="width:100%"></td>
-              <td><img src="image_audio/sad0.3.png" style="width:100%"></td>
-              <td><img src="image_audio/sad0.7.png" style="width:100%"></td>
-              <td><img src="image_audio/sad1.0.png" style="width:100%"></td>
-            </tr>
-          </table>
         </li>
         <li class="w3-padding" style="font-size: 20px;  text-align:center; color:black;">Synthesized Singing Voice with MIDI<br>
           <p style="font-size: 18px; color:black; text-align:left;">This audio sample is the result of concation of multiple singing voice samples which are syntheiszed by same song but different part of each. We add MIDI of the song to the audio sample of singing voice.</p>
@@ -229,9 +218,26 @@ table {color: black; font-size: 15px}
 
   <!-- The Contact Section -->
   <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
-    <h2 class="w3-wide w3-center">Visualization</h2>
+    <h2 class="w3-wide w3-center"style="font-size:25px">Statistical Pitch Predictor</h2>
+    <p>Statistical pitch predictor estimates the distribution of the F0 frequencies at the phoneme level.
+      The pitch predictor consists of a pitch mean predictor and a pitch variance predictor and estimates the local mean <var>µ<sub>i</sub></var> and local variance <var>σ<sub>i</sub><sup>2</sup></var> of the F0 frequencies within the interval of each phoneme y<sub>i</sub>
+      Both predictors take as input the joint embedding <var>E(y<sub>i</sub>, z<sub>1</sub>,z<sub>2</sub>)</var> to reflect the influence of singer ID (<var>z<sub>1</sub></var>) and emotional intensity (<var>z<sub>2</sub></var>).
+      To reliably estimate mean pitch, the pitch mean predictor <var>Pred<sub>pm</sub>()</var> estimates mean pitch <var>µ&#770;<sub>i</sub></var> indirectly by first predicting the residual <var>r&#770;<sub>i</sub></var> between the note pitch <var>p<sub>i</sub></var> and the ground truth mean pitch <var>µ<sub>i</sub></var> measured from the training sample and then adding the predicted residual to the note pitch as <var>µ&#770;<sub>i</sub> = p<sub>i</sub> + <var>r&#770;<sub>i</sub></var></var>
+      The pitch variance predictor <var>Pred<sub>pcv</sub>()</var> predicts the coefficient of variances <var>CV<sub>i</sub> = σ<sub>i</sub> / µ<sub>i</sub></var> because <var>CV<sub>i</sub></var> removes the correlation with pitch mean by normalization and therefore is more reliably predictable.</p>
+
+  <h2 class="w3-wide w3-center" style="font-size:25px"><br><br>Context-aware Residual Duration Predictor(CRDP)</h2>
+  <p> CRDP minimizes synchronization error by considering cumulative duration up to the previous phoneme when predicting the next phoneme duration hwile imitating variances in training samples to express emotion for individual phonemes.
+    CRDP predicts the duration of phonemes sequentially with an autoregressive structure. When it predicts the duration of a phoneme, it takes the synchronization error of the previous phoneme and predicts the next phoneme duration inclined to compensate for the synchronization error at the previous step.
+    At each step, CRDP takes the joint embedding <var>E(y<sub>i</sub>,z<sub>1</sub>,z<sub>2</sub>)</var> to reflect the influence of singer ID and emotional intensity.
+    CRDP also takes the synchronization error of the previous step <var>SyncErr(i-1)</var> as input.
+    CRDP learns to estimate residual duration <var>s<sub>i</sub> = d<sub>i</sub> - d<sub>i</sub></var> as <var>s<sub>i</sub> = Pred<sub>d(i)</sub>(E(y<sub>i</sub>,z<sub>1</sub>,z<sub>2</sub>), SyncErr(i-1))</var>.
+    Then, CRDP adds the predicted residual to the note duration as <var>d<sub>i</sub> = d<sub>i</sub> + s<sub>i</sub></var>.
+    <br>
+  </p>
+  <img src="image_audio/CRDP.PNG" style="width:100%">
+  <p align="center">The architecture of context-aware duration predictor</p>
   </div>
-  
+
 <!-- End Page Content -->
 </div>
 
