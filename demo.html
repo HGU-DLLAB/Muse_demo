@@ -183,12 +183,19 @@ table {color: black; font-size: 15px}
 
         <!-- Statistical Pitch Predictor -->
         <li class="w3-padding" style="font-size: 20px;  text-align:center; color:black;">Statistical Pitch Predictor<br>
-          <p style="font-size: 18px; color:black; text-align:left;">Statistical pitch predictor estimates the distribution of the F0 frequencies at the phoneme level.
-            The pitch predictor consists of a pitch mean predictor and a pitch variance predictor and estimates the local mean <var>µ<sub>i</sub></var> and local variance <var>σ<sub>i</sub><sup>2</sup></var> of the F0 frequencies within the interval of each phoneme y<sub>i</sub>
-            Both predictors take as input the joint embedding <var>E(y<sub>i</sub>, z<sub>1</sub>,z<sub>2</sub>)</var> to reflect the influence of singer ID (<var>z<sub>1</sub></var>) and emotional intensity (<var>z<sub>2</sub></var>).
-            To reliably estimate mean pitch, the pitch mean predictor <var>Pred<sub>pm</sub>(&#183;)</var> estimates mean pitch <var>µ&#770;<sub>i</sub></var> indirectly by first predicting the residual <var>r&#770;<sub>i</sub></var> between the note pitch <var>p<sub>i</sub></var> and the ground truth mean pitch <var>µ<sub>i</sub></var> measured from the training sample and then adding the predicted residual to the note pitch as <var>µ&#770;<sub>i</sub> = p<sub>i</sub> + <var>r&#770;<sub>i</sub></var></var>
-            The pitch variance predictor <var>Pred<sub>pcv</sub>(&#183;)</var> predicts the coefficient of variances <var>CV<sub>i</sub> = σ<sub>i</sub> / µ<sub>i</sub></var> because <var>CV<sub>i</sub></var> removes the correlation with pitch mean by normalization and therefore is more reliably predictable. </p>
-    
+          <p style="font-size: 18px; color:black; text-align:left;">This figure is The F0 contours (blue solid line) of a female singer’s
+            voices with emotional intensity levels neutral (left) and
+            sad1.0(right). Each row displays the F0 contour of the ground
+            samples (top), the output of Muse-SVS with the conventional
+            deterministic pitch predictor (middle), and the output of Muse-SVS with the proposed statistical pitch predictor (bottom). The
+            orange lines denote the mean of the F0 frequencies within
+            the interval of each phoneme, and the black dotted lines
+            denote the trajectory of mean±stdev. The deterministic pitch
+            predictor produced vibrato with similar strengths regardless
+            of emotional intensity. However, the proposed statistical pitch
+            predictor produced vibrato of different strengths depending on
+            emotional intensity while maintaining the macroscopic trend
+            close to the note pitch sequence. Please listen the samples under the figure.</p>
             
           <img src="image_audio/statisticalPP.PNG" style="width:900px;"/>
           <p style="font-size: 15px; color:black;">The F0 contours  (blue solid line) of a female singer’s
@@ -223,13 +230,17 @@ table {color: black; font-size: 15px}
 
         <!-- CRDP -->
         <li class="w3-padding" style="font-size: 20px;  text-align:center; color:black;">Context-aware Residual Duration Predictor(CRDP)<br>
-          <p style="font-size: 18px; color:black; text-align:left;">CRDP minimizes synchronization error by considering cumulative duration up to the previous phoneme when predicting the next phoneme duration hwile imitating variances in training samples to express emotion for individual phonemes.
-            CRDP predicts the duration of phonemes sequentially with an autoregressive structure. When it predicts the duration of a phoneme, it takes the synchronization error of the previous phoneme and predicts the next phoneme duration inclined to compensate for the synchronization error at the previous step.
-            At each step, CRDP takes the joint embedding <var>E(y<sub>i</sub>,z<sub>1</sub>,z<sub>2</sub>)</var> to reflect the influence of singer ID and emotional intensity.
-            CRDP also takes the synchronization error of the previous step <var>SyncErr(i-1)</var> as input.
-            CRDP learns to estimate residual duration <var>s<sub>i</sub> = d<sub>i</sub> - d&#772;<sub>i</sub></var> as <var>s&#770;<sub>i</sub> = Pred<sub>d(i)</sub>(E(y<sub>i</sub>,z<sub>1</sub>,z<sub>2</sub>), SyncErr(i-1))</var>.
-            Then, CRDP adds the predicted residual to the note duration as <var>d&#770;<sub>i</sub> = d&#772;<sub>i</sub> + s&#770;<sub>i</sub></var>.
-            <br></p>
+          <p style="font-size: 18px; color:black; text-align:left;">This figure demonstrates the synchronization errors of duration predictors for
+            a long song composed of 117 notes whose length is 67.08
+            seconds. 1st row: the duration and pitch sequence of a song in
+            MIDI format. 2nd-4th rows: singing voices synthesized with
+            CRDP (proposed) and two baseline predictors applying note
+            normalization [9] and syllable duration loss [5], respectively.
+            The note-level MAE of the three models are 0.064, 0.075, and
+            0.080 seconds from the top. However, their synchronization
+            errors at the end of the song are 0.01, 6.96, and 4.83 seconds.
+            CRDP exhibited a significantly lower synchronization error
+            than the baseline predictors for a long song.            <br></p>
             
           <img src="image_audio/crdp_graph.PNG" style="width:700px;"/>
           <p style="font-size: 15px; color:black;">The synchronization errors of duration predictors for
@@ -264,9 +275,20 @@ table {color: black; font-size: 15px}
         
         <!-- ASPP -->
         <li class="w3-padding" style="font-size: 20px;  text-align:center; color:black;">ASPP-Transformer<br>
-          <p style="font-size: 18px; color:black; text-align:left;">ASPP-Transformer is extended FFT by replacing convolution iwth atrous spatial pyramid pooling (ASPP), as shown in the figure. It inherits the advantages of ASPP in that it can refer to a broad context with minimal increases in computation and parameters. To focus on the local neighborhoods while incorporatiing a broad context, we assign a large number of channels to the filters with low atrous rates.<br></p>
+          <p style="font-size: 18px; color:black; text-align:left;">This figure compares the effective receptive fields of the decoders
+            composed of the proposed ASPP-Transformer and ordinary
+            Transformer blocks, respectively. The first row displays the
+            gradient norm of an output node with respect to the input
+            embeddings aligned to the frame-level resolution by the length
+            regulator. The gradient norm measures the importance of the
+            input on the output. The right column shows that the
+            ordinary Transformer has a limited effective receptive field,
+            which can lead to discontinuous Mel-spectrogram and unstable vibrato. In contrast, ASPP-Transformer refers to broader
+            contexts than ordinary Transformer, producing a more stable
+            Mel-spectrogram and vibrato, which leads to improved fidelity
+            and expressiveness. Please listen the samples under the figure.</p>
           <img src="image_audio/ASPP_fig.PNG" style="width:700px;"/>
-          <p style="font-size: 15px; color:black;">The effective receptive fields of the proposed ASPP-Transformer and the conventional Transformer.</p>
+          <p style="font-size: 15px; color:black;"></p>
           <table align="center">
             <colgroup span="5" class="columns"></colgroup>
             <tr align="center">
